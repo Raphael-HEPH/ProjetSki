@@ -10,6 +10,8 @@ public abstract class Person {
 	private String phone;
 	private String address;
 	
+	public Person() {}
+	
 	public Person(int id, String firstName, String lastName, int age, String email, String phone, String address) {
 		this.id = id;
 		this.firstName = firstName;

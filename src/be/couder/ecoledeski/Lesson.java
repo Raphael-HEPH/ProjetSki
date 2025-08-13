@@ -7,13 +7,27 @@ public class Lesson {
 	private int id;
 	private int minStudent;
 	private int maxStudent;
-	private LocalDateTime date;
 	
-	public Lesson(int id, int minStudent, int maxStudent, LocalDateTime date) {
+	private LocalDateTime date;
+	private LocalDateTime startHour;
+	private int minutes;
+	private boolean isPrivate;
+	
+	private LessonType lessonType;
+	private Instructor instructor;
+	
+	public Lesson(int id, int minStudent, int maxStudent, LocalDateTime date, LocalDateTime startHour, int minutes
+			, boolean isPrivate, LessonType lessonType, Instructor instructor) 
+	{
 		this.id = id;
 		this.minStudent = minStudent;
 		this.maxStudent = maxStudent;
 		this.date = date;
+		this.startHour = startHour;
+        this.minutes = minutes;
+        this.isPrivate = isPrivate;
+        this.lessonType = lessonType;
+        this.instructor = instructor;
 	}
 
 	public int getId() {
@@ -59,7 +73,46 @@ public class Lesson {
 		    }
 		this.date = date;
 	}
-	
+
+	public LocalDateTime getStartHour() {
+		return startHour;
+	}
+
+	public void setStartHour(LocalDateTime startHour) {
+		this.startHour = startHour;
+	}
+
+	public int getMinutes() {
+		return minutes;
+	}
+
+	public void setMinutes(int minutes) {
+		this.minutes = minutes;
+	}
+
+	public boolean isPrivate() {
+		return isPrivate;
+	}
+
+	public void setPrivate(boolean isPrivate) {
+		this.isPrivate = isPrivate;
+	}
+
+	public LessonType getLessonType() {
+		return lessonType;
+	}
+
+	public void setLessonType(LessonType lessonType) {
+		this.lessonType = lessonType;
+	}
+
+	public Instructor getInstructor() {
+		return instructor;
+	}
+
+	public void setInstructor(Instructor instructor) {
+		this.instructor = instructor;
+	}
 	
 	
 }

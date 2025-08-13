@@ -5,11 +5,17 @@ public class LessonType {
 	private int id;
 	private double price;
 	private String name;
+	private int lessonLevel;
+	private Accreditation accreditation;
 	
-	public LessonType(int id, double price, String name) {
+	public LessonType() {}
+	
+	public LessonType(int id, double price, String name, int lessonLevel, Accreditation accreditation) {
 		this.id = id;
 		this.price = price;
 		this.name = name;
+		this.lessonLevel = lessonLevel;
+		this.accreditation = accreditation;
 	}
 
 	public int getId() {
@@ -42,6 +48,22 @@ public class LessonType {
 		this.name = name;
 	}
 	
+	public int getLessonLevel() {
+		return lessonLevel;
+	}
+
+	public void setLessonLevel(int lessonLevel) {
+		this.lessonLevel = lessonLevel;
+	}
+
+	public Accreditation getAccreditation() {
+		return accreditation;
+	}
+
+	public void setAccreditation(Accreditation accreditation) {
+		this.accreditation = accreditation;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 	    if (this == o) return true;

@@ -1,5 +1,5 @@
 package be.couder.ecoleski.DAO_Folder;
 
-public class AccrediationDAO {
+public class AccreditationDAO {
 
 }

@@ -1,13 +1,24 @@
 package be.couder.ecoledeski;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import be.couder.ecoleski.DAO_Folder.AccreditationDAO;
+import be.couder.ecoleski.DAO_Folder.InstructorDAO;
+import be.couder.ecoleski.DAO_Folder.LessonTypeDAO;
+
 public class Accreditation {
 	
 	private int id;
     private String name;
+    private List<Instructor> instructors;
+    private List<LessonType> lessonTypes;
     
 	public Accreditation(int id, String name) {
 		this.id = id;
 		this.name = name;
+		this.instructors = new ArrayList<>();
+	    this.lessonTypes = new ArrayList<>();
 	}
 
 	public int getId() {
@@ -25,8 +36,84 @@ public class Accreditation {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
     
-    @Override
+    public List<Instructor> getInstructors() {
+		return instructors;
+	}
+
+	public void setInstructors(List<Instructor> instructors) {
+		this.instructors = instructors;
+	}
+
+	public List<LessonType> getLessonTypes() {
+		return lessonTypes;
+	}
+
+	public void setLessonTypes(List<LessonType> lessonTypes) {
+		this.lessonTypes = lessonTypes;
+	}
+	
+	public boolean addAccreditation(AccreditationDAO accreditationDAO) {
+		return accreditationDAO.create(this);
+	}
+	
+	  public void loadRelations(InstructorDAO instructorDAO, LessonTypeDAO lessonTypeDAO) {
+			if(id <= 0) {
+				throw new IllegalArgumentException("Id plus petit ou égal à 0, impossible de charger les relations");
+			}
+
+	        this.instructors = instructorDAO.getInstructorsByAccreditationId(this.id);
+	        for (Instructor instructor : instructors) {
+	            instructor.addAccreditation(this);
+	        }
+
+	        this.lessonTypes = lessonTypeDAO.getLessonTypesByAccreditationId(this.id);
+	        for (LessonType lt : lessonTypes) {
+	            lt.setAccreditation(this);
+	        }
+	    }
+
+	  public static Accreditation getAccreditationById(int id, AccreditationDAO accreditationDAO, InstructorDAO instructorDAO, LessonTypeDAO lessonTypeDAO) {
+			if(id <= 0) {
+				throw new IllegalArgumentException("Id plus petit ou égal à 0");
+			}
+	        Accreditation accreditation = accreditationDAO.getById(id);
+	        if (accreditation != null) {
+	            accreditation.loadRelations(instructorDAO, lessonTypeDAO);
+	        }
+	        return accreditation;
+	    }
+	    
+	    public static List<Accreditation> getAllAccreditations(AccreditationDAO accreditationDAO, InstructorDAO instructorDAO, LessonTypeDAO lessonTypeDAO) {
+	        List<Accreditation> accs = accreditationDAO.getAll();
+	        for (Accreditation acc : accs) {
+	            acc.loadRelations(instructorDAO, lessonTypeDAO);
+	        }
+	        return accs;
+	    }
+	    
+	    public boolean deleteAccreditationById(int id, AccreditationDAO accreditationDAO) {
+			if(id <= 0) {
+				throw new IllegalArgumentException("Id plus petit ou égal à 0");
+			}
+	        return accreditationDAO.delete(id);
+	    }
+	    
+	    public void addInstructor(Instructor instructor) {
+	        if (instructor != null && !instructors.contains(instructor)) {
+	            instructors.add(instructor);
+	            instructor.addAccreditation(this);
+	        }
+	    }
+
+	    public void addLessonType(LessonType lessonType) {
+	        if (lessonType != null && !lessonTypes.contains(lessonType)) {
+	            lessonTypes.add(lessonType);
+	            lessonType.setAccreditation(this);
+	        }
+	    }
+	@Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
