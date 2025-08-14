@@ -1,5 +1,6 @@
 package be.couder.ecoledeski;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import be.couder.ecoleski.DAO_Folder.StudentDAO;
@@ -10,10 +11,31 @@ public class Student extends Person {
 		super();
 	}
 	
+	private List<Booking> bookings;
 	
 	public Student(int id, String firstName, String lastName, int age, String email, String phone, String address) {
         super(id, firstName, lastName, age, email, phone, address);
+        this.bookings = new ArrayList<>();
     }
+	
+	
+	public List<Booking> getBookings() {
+		return bookings;
+	}
+
+	public void setBookings(List<Booking> bookings) {
+		this.bookings = bookings;
+	}
+	
+	public void addBooking(Booking booking) {
+	    if (booking != null && !bookings.contains(booking)) {
+	        bookings.add(booking);
+	        if (booking.getStudent() != this) {
+	            booking.setStudent(this);
+	        }
+	    }
+	}
+
 
 	@Override
 	public String toString() {

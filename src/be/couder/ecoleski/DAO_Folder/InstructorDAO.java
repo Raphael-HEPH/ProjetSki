@@ -43,7 +43,6 @@ public class InstructorDAO {
 	                        int id = rs.getInt("ID");
 	                        instructor.setId(id);
 
-	                        // ajouter les accréditations
 	                        for (Accreditation acc : instructor.getAccreditations()) {
 	                            addAccreditationToInstructor(id, acc.getId());
 	                        }

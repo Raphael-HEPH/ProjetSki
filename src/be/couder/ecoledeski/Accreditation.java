@@ -58,7 +58,8 @@ public class Accreditation {
 		return accreditationDAO.create(this);
 	}
 	
-	  public void loadRelations(InstructorDAO instructorDAO, LessonTypeDAO lessonTypeDAO) {
+	
+	  public void ChargerRelations(InstructorDAO instructorDAO, LessonTypeDAO lessonTypeDAO) {
 			if(id <= 0) {
 				throw new IllegalArgumentException("Id plus petit ou égal à 0, impossible de charger les relations");
 			}
@@ -80,7 +81,7 @@ public class Accreditation {
 			}
 	        Accreditation accreditation = accreditationDAO.getById(id);
 	        if (accreditation != null) {
-	            accreditation.loadRelations(instructorDAO, lessonTypeDAO);
+	            accreditation.ChargerRelations(instructorDAO, lessonTypeDAO);
 	        }
 	        return accreditation;
 	    }
@@ -88,7 +89,7 @@ public class Accreditation {
 	    public static List<Accreditation> getAllAccreditations(AccreditationDAO accreditationDAO, InstructorDAO instructorDAO, LessonTypeDAO lessonTypeDAO) {
 	        List<Accreditation> accs = accreditationDAO.getAll();
 	        for (Accreditation acc : accs) {
-	            acc.loadRelations(instructorDAO, lessonTypeDAO);
+	            acc.ChargerRelations(instructorDAO, lessonTypeDAO);
 	        }
 	        return accs;
 	    }
@@ -101,16 +102,32 @@ public class Accreditation {
 	    }
 	    
 	    public void addInstructor(Instructor instructor) {
-	        if (instructor != null && !instructors.contains(instructor)) {
-	            instructors.add(instructor);
-	            instructor.addAccreditation(this);
-	        }
-	    }
+		    if (instructor != null && !instructors.contains(instructor)) {
+		        instructors.add(instructor);
+		        if (!instructor.getAccreditations().contains(this)) {
+		            instructor.addAccreditation(this);
+		        }
+		    }
+		}
+
+		public void removeInstructor(Instructor instructor) {
+		    if (instructor != null && instructors.contains(instructor)) {
+		        instructors.remove(instructor);
+		        instructor.getAccreditations().remove(this);
+		    }
+		}
 
 	    public void addLessonType(LessonType lessonType) {
 	        if (lessonType != null && !lessonTypes.contains(lessonType)) {
 	            lessonTypes.add(lessonType);
 	            lessonType.setAccreditation(this);
+	        }
+	    }
+	    
+	    public void removeLessonType(LessonType lessonType) {
+	        if (lessonType != null && lessonTypes.contains(lessonType)) {
+	            lessonTypes.remove(lessonType);
+	            lessonType.setAccreditation(null);
 	        }
 	    }
 	@Override

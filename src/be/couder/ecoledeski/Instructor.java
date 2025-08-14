@@ -11,17 +11,20 @@ public class Instructor extends Person{
 	
 	private List<Accreditation> accreditations;
 	private List<Lesson> lessons;
+	private List<Booking> bookings;
 	
 	public Instructor() {
 		super();
 		accreditations = new ArrayList<>();
         lessons = new ArrayList<>();
+	    bookings = new ArrayList<>();
 	}
 
 	 public Instructor(int id, String firstName, String lastName, int age, String email, String phone, String address, Accreditation accreditation) {
 		 super(id, firstName, lastName, age, email, phone, address);
 		 accreditations = new ArrayList<>();
 	     lessons = new ArrayList<>();
+	     bookings = new ArrayList<>();
 	     
 	     if(accreditation == null)
 	    	 throw new IllegalArgumentException("accreditation ne peut pas etre null.");
@@ -46,12 +49,41 @@ public class Instructor extends Person{
 		this.lessons = lessons;
 	}
 	
-	public void addAccreditation(Accreditation accreditation) {
-		if(!accreditations.contains(accreditation)) 
-		{
-			accreditations.add(accreditation);
-		}	
+	public List<Booking> getBookings() {
+		return bookings;
 	}
+
+	public void setBookings(List<Booking> bookings) {
+		this.bookings = bookings;
+	}
+
+	public void addAccreditation(Accreditation accreditation) {
+	    if (accreditation != null && !accreditations.contains(accreditation)) {
+	        accreditations.add(accreditation);
+	        if (!accreditation.getInstructors().contains(this)) {
+	            accreditation.addInstructor(this);
+	        }
+	    }
+	}
+	
+	public void removeAccreditation(Accreditation accreditation) {
+	    if (accreditation != null && accreditations.contains(accreditation)) {
+	        accreditations.remove(accreditation);
+	        accreditation.getInstructors().remove(this);
+	    }
+	}
+
+	
+	public void addBooking(Booking booking) {
+	    if (booking == null) {
+	        throw new IllegalArgumentException("Le booking ne peut pas être null.");
+	    }
+	    if (!bookings.contains(booking)) {
+	        bookings.add(booking);
+	        booking.setInstructor(this); 
+	    }
+	}
+
 	
 	public void addLesson(Lesson lesson) {
 		if(!lessons.contains(lesson)) {
@@ -76,12 +108,10 @@ public class Instructor extends Person{
 	        throw new IllegalArgumentException("Id plus petit ou égal à 0");
 	    }
 
-	    // Charger et ajouter les accréditations
 	    List<Accreditation> loadedAccreditations = accreditationDAO.getAccreditationsByInstructorId(this.getId());
 	    this.accreditations.clear(); 
 	    this.accreditations.addAll(loadedAccreditations);
 
-	    // Charger et ajouter les leçons
 	    List<Lesson> loadedLessons = lessonDAO.getLessonsByInstructorId(this.getId());
 	    this.lessons.clear();
 	    for (Lesson lesson : loadedLessons) {

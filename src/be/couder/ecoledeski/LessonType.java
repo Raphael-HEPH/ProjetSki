@@ -1,5 +1,11 @@
 package be.couder.ecoledeski;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import be.couder.ecoleski.DAO_Folder.AccreditationDAO;
+import be.couder.ecoleski.DAO_Folder.LessonTypeDAO;
+
 public class LessonType {
 
 	private int id;
@@ -7,15 +13,19 @@ public class LessonType {
 	private String name;
 	private int lessonLevel;
 	private Accreditation accreditation;
+	private List<Lesson> lessons;
 	
-	public LessonType() {}
+	public LessonType() {
+		lessons = new ArrayList<>();
+	}
 	
-	public LessonType(int id, double price, String name, int lessonLevel, Accreditation accreditation) {
+	public LessonType(int id,  String name,double price,int lessonLevel, Accreditation accreditation) {
 		this.id = id;
-		this.price = price;
 		this.name = name;
+		this.price = price;
 		this.lessonLevel = lessonLevel;
-		this.accreditation = accreditation;
+		lessons = new ArrayList<>();
+		setAccreditation(accreditation);
 	}
 
 	public int getId() {
@@ -62,8 +72,65 @@ public class LessonType {
 
 	public void setAccreditation(Accreditation accreditation) {
 		this.accreditation = accreditation;
+		if (accreditation != null && !accreditation.getLessonTypes().contains(this)) {
+            accreditation.addLessonType(this);
+            }
+	}
+	
+	public void addLesson(Lesson lesson) {
+	    if (lesson != null && !lessons.contains(lesson)) {
+	        lessons.add(lesson);
+	        if (lesson.getLessonType() != this) {
+	            lesson.setLessonType(this); 
+	        }
+	    }
 	}
 
+	public void ChargerRelations(AccreditationDAO accreditationDAO) {
+			if(id <= 0) {
+				throw new IllegalArgumentException("Id doit etre plus grand que 0.");
+			}
+
+	        Accreditation acc = accreditationDAO.getAccreditationByLessonTypeId(this.id);
+	        if (acc != null) {
+	            this.setAccreditation(acc);
+	        }
+	    }
+
+	public boolean addLessonType(LessonTypeDAO lessonTypeDAO) {
+	        if(lessonTypeDAO == null) {
+	            System.out.println("Erreur : LessonTypeDAO non initialisé !");
+	            return false;
+	        }
+	        return lessonTypeDAO.create(this);
+	    }
+
+	public static LessonType getLessonTypeById(int id, LessonTypeDAO lessonTypeDAO, AccreditationDAO accreditationDAO) {
+	        LessonType lessonType = lessonTypeDAO.getById(id);
+	        if (lessonType != null) {
+	            lessonType.ChargerRelations(accreditationDAO);
+	        }
+	        return lessonType;
+	    }
+
+	public static List<LessonType> getAllLessonTypes(LessonTypeDAO lessonTypeDAO, AccreditationDAO accreditationDAO) {
+	        List<LessonType> lessonTypes = lessonTypeDAO.getAll();
+	        for (LessonType lessonType : lessonTypes) {
+	        	lessonType.ChargerRelations(accreditationDAO);
+	        }
+	        return lessonTypes;
+	    }
+
+	public boolean deleteLessonTypeById(int id, LessonTypeDAO lessonTypeDAO) {
+	        if (lessonTypeDAO == null) {
+	            System.out.println("Erreur : LessonTypeDAO non initialisé !");
+	            return false;
+	        }
+			if(id <= 0) {
+				throw new IllegalArgumentException("Id plus petit ou égal à 0");
+			}
+	        return lessonTypeDAO.delete(id);
+	    }
 	@Override
 	public boolean equals(Object o) {
 	    if (this == o) return true;
