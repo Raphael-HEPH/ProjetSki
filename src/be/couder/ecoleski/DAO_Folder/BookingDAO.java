@@ -185,4 +185,90 @@ public class BookingDAO {
 	    return bookings;
 	}
     
+    public List<Booking> getBookingsByPeriodId(int periodId) {
+        if (periodId <= 0) throw new IllegalArgumentException("Id de période doit être plus grand que 0.");
+
+        List<Booking> bookings = new ArrayList<>();
+        String sql = "SELECT * FROM Booking WHERE PERIODID = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, periodId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Lesson lesson = new Lesson();
+                lesson.setId(rs.getInt("LESSONID"));
+
+                Instructor instructor = new Instructor();
+                instructor.setId(rs.getInt("INSTRUCTORID"));
+
+                Student student = new Student();
+                student.setId(rs.getInt("STUDENTID"));
+
+                Period period = new Period();
+                period.setId(rs.getInt("PERIODID"));
+
+                Booking booking = new Booking(
+                    rs.getInt("ID"),
+                    rs.getInt("HASINSURANCE") == 1,
+                    rs.getInt("HASDISCOUNT") == 1,
+                    lesson,
+                    instructor,
+                    student,
+                    period
+                );
+
+                bookings.add(booking);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return bookings;
+    }
+    
+    public List<Booking> getBookingsByStudentId(int studentId) {
+        if (studentId <= 0) throw new IllegalArgumentException("Id étudiant doit être plus grand que 0.");
+
+        List<Booking> bookings = new ArrayList<>();
+        String sql = "SELECT * FROM Booking WHERE STUDENTID = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, studentId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Lesson lesson = new Lesson();
+                lesson.setId(rs.getInt("LESSONID"));
+
+                Instructor instructor = new Instructor();
+                instructor.setId(rs.getInt("INSTRUCTORID"));
+
+                Student student = new Student();
+                student.setId(rs.getInt("STUDENTID"));
+
+                Period period = new Period();
+                period.setId(rs.getInt("PERIODID"));
+
+                Booking booking = new Booking(
+                    rs.getInt("ID"),
+                    rs.getInt("HASINSURANCE") == 1,
+                    rs.getInt("HASDISCOUNT") == 1,
+                    lesson,
+                    instructor,
+                    student,
+                    period
+                );
+
+                bookings.add(booking);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return bookings;
+    }
+
+
+    
 }

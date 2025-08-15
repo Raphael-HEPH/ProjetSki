@@ -77,19 +77,20 @@ public class StudentDAO {
 	    }
 	 
 	 public boolean deleteById(int id) {
-			String sql = "DELETE FROM student WHERE id = ?";
-			
-			try(PreparedStatement stmt = connection.prepareStatement(sql)){
-				stmt.setInt(1, id);
-				int rowsAffected = stmt.executeUpdate();
-				
-				return rowsAffected > 0;
-		
-			} catch(SQLException e) {
-					e.printStackTrace();
-					return false;
-			}	
+		    String sql = "DELETE FROM student WHERE id = ?";
+		    try (Connection conn = ConnectToDB.getInstance(); 
+		         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+		        stmt.setInt(1, id);
+		        int rowsAffected = stmt.executeUpdate();
+		        return rowsAffected > 0;
+
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		        return false;
+		    }   
 		}
+
 	 
 	 public List<Student> GetAll(){
 			List<Student> students = new ArrayList<>();

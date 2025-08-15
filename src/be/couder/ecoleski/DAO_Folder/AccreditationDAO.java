@@ -86,28 +86,28 @@ private Connection connection;
     }
 	
 	public List<Accreditation> getAccreditationsByInstructorId(int instructorId) {
-        List<Accreditation> accreditations = new ArrayList<>();
-        String sql = "SELECT a.ID, a.NAME FROM accreditations a " +
-                     "JOIN instructor_accreditation ia ON a.ID = ia.accreditationId " +
-                     "WHERE ia.instructorId = ?";
+	    List<Accreditation> accreditations = new ArrayList<>();
+	    String sql = "SELECT a.ID, a.NAME FROM accreditations a " +
+	                 "JOIN instructor_accreditation ia ON a.ID = ia.ACCREDITATION_ID " +
+	                 "WHERE ia.INSTRUCTOR_ID = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, instructorId);
-            ResultSet rs = stmt.executeQuery();
+	    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+	        stmt.setInt(1, instructorId);
+	        ResultSet rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                Accreditation accreditation = new Accreditation(
-                    rs.getInt("ID"),
-                    rs.getString("NAME")
-                );
-                accreditations.add(accreditation);
-                
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return accreditations;
-    }
+	        while (rs.next()) {
+	            Accreditation accreditation = new Accreditation(
+	                rs.getInt("ID"),
+	                rs.getString("NAME")
+	            );
+	            accreditations.add(accreditation);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return accreditations; 
+	}
+
 	
 	public Accreditation getAccreditationByLessonTypeId(int lessonTypeId) {
         String sql = "SELECT a.ID, a.NAME " +
@@ -131,4 +131,5 @@ private Connection connection;
         return null;
     }
 
+	
 }

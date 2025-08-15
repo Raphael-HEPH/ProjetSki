@@ -37,30 +37,33 @@ public class LessonTypeDAO {
     }
 	
 	public LessonType getById(int id) {
-        String sql = "SELECT * FROM LessonType WHERE ID = ?";
-        LessonType lessonType = null;
+	    String sql = "SELECT * FROM LessonType WHERE ID = ?";
+	    LessonType lessonType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
+	    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+	        stmt.setInt(1, id);
+	        ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                int accreditationId = rs.getInt("ACCREDITATION_ID");
-                Accreditation accreditation = new Accreditation(accreditationId, null);
+	        if (rs.next()) {
+	            int accreditationId = rs.getInt("ACCREDITATION_ID");
+	            AccreditationDAO accreditationDAO = new AccreditationDAO(); 
+	            Accreditation accreditation = accreditationDAO.getById(accreditationId);
 
-                lessonType = new LessonType(
-                    rs.getInt("ID"),
-                    rs.getString("NAME"),
-                    rs.getDouble("PRICE_PER_WEEK"),
-                    rs.getInt("LESSONLEVEL"),
-                    accreditation
-                );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return lessonType;
-    }
+	            lessonType = new LessonType(
+	                rs.getInt("ID"),
+	                rs.getString("NAME"),
+	                rs.getDouble("PRICE_PER_WEEK"),
+	                rs.getInt("LESSONLEVEL"),
+	                accreditation
+	            );
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return lessonType;
+	}
+
+
 	
 	 public List<LessonType> getAll() {
 	        List<LessonType> lessonTypes = new ArrayList<>();

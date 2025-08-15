@@ -21,8 +21,9 @@ public class LessonDAO {
     }
 
     public boolean create(Lesson lesson) {
-        String sql = "INSERT INTO lesson (MINSTUDENT, MAXSTUDENT, LESSONTYPEID, LESSONDATE, INSTRUCTORID, "
-                   + "STARTTIME, DURATION, ISPRIVATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO lesson (ID, MINSTUDENT, MAXSTUDENT, LESSONTYPEID, LESSONDATE, INSTRUCTORID, "
+                   + "STARTTIME, DURATION, ISPRIVATE) "
+                   + "VALUES (lesson_seq.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, lesson.getMinStudent());
@@ -55,18 +56,23 @@ public class LessonDAO {
                 int lessonTypeId = rs.getInt("LESSONTYPEID");
                 int instructorId = rs.getInt("INSTRUCTORID");
 
-                LessonType lessonType = new LessonType();
-                lessonType.setId(lessonTypeId);
+                LessonType lessonType = LessonType.getLessonTypeById(
+                    lessonTypeId);
 
-                Instructor instructor = new Instructor();
-                instructor.setId(instructorId);
+                Instructor instructor = new InstructorDAO().getById(instructorId);
+
+                java.sql.Date date = rs.getDate("LESSONDATE");
+                java.time.LocalDate lessonDate = (date != null) ? date.toLocalDate() : null;
+
+                java.sql.Timestamp ts = rs.getTimestamp("STARTTIME");
+                java.time.LocalDateTime startTime = (ts != null) ? ts.toLocalDateTime() : null;
 
                 lesson = new Lesson(
                     rs.getInt("ID"),
                     rs.getInt("MINSTUDENT"),
                     rs.getInt("MAXSTUDENT"),
-                    rs.getDate("LESSONDATE").toLocalDate(),
-                    rs.getTimestamp("STARTTIME").toLocalDateTime(),
+                    lessonDate,
+                    startTime,
                     rs.getInt("DURATION"),
                     rs.getInt("ISPRIVATE") == 1,
                     lessonType,
@@ -92,18 +98,24 @@ public class LessonDAO {
                 int lessonTypeId = rs.getInt("LESSONTYPEID");
                 int instructorId = rs.getInt("INSTRUCTORID");
 
-                LessonType lessonType = new LessonType();
-                lessonType.setId(lessonTypeId);
+                LessonType lessonType = LessonType.getLessonTypeById(
+                    lessonTypeId
+                );
 
-                Instructor instructor = new Instructor();
-                instructor.setId(instructorId);
+                Instructor instructor = new InstructorDAO().getById(instructorId);
+
+                java.sql.Date date = rs.getDate("LESSONDATE");
+                java.time.LocalDate lessonDate = (date != null) ? date.toLocalDate() : null;
+
+                java.sql.Timestamp ts = rs.getTimestamp("STARTTIME");
+                java.time.LocalDateTime startTime = (ts != null) ? ts.toLocalDateTime() : null;
 
                 Lesson lesson = new Lesson(
                     rs.getInt("ID"),
                     rs.getInt("MINSTUDENT"),
                     rs.getInt("MAXSTUDENT"),
-                    rs.getDate("LESSONDATE").toLocalDate(),
-                    rs.getTimestamp("STARTTIME").toLocalDateTime(),
+                    lessonDate,
+                    startTime,
                     rs.getInt("DURATION"),
                     rs.getInt("ISPRIVATE") == 1,
                     lessonType,
@@ -119,6 +131,7 @@ public class LessonDAO {
 
         return lessons;
     }
+
 
     public boolean delete(int id) {
         String sql = "DELETE FROM lesson WHERE ID = ?";
@@ -150,6 +163,51 @@ public class LessonDAO {
                 Instructor instructor = new Instructor();
                 instructor.setId(instructorId);
 
+                java.sql.Timestamp ts = rs.getTimestamp("STARTTIME");
+                java.time.LocalDateTime startTime = (ts != null) ? ts.toLocalDateTime() : null;
+
+                java.sql.Date date = rs.getDate("LESSONDATE");
+                java.time.LocalDate lessonDate = (date != null) ? date.toLocalDate() : null;
+
+                Lesson lesson = new Lesson(
+                    rs.getInt("ID"),
+                    rs.getInt("MINSTUDENT"),
+                    rs.getInt("MAXSTUDENT"),
+                    lessonDate,
+                    startTime,
+                    rs.getInt("DURATION"),
+                    rs.getInt("ISPRIVATE") == 1,
+                    lessonType,
+                    instructor
+                );
+
+                lessons.add(lesson);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lessons;
+    }
+
+    public List<Lesson> getLessonsByLessonTypeId(int lessonTypeId) {
+        List<Lesson> lessons = new ArrayList<>();
+        String sql = "SELECT * FROM lesson WHERE LESSONTYPEID = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, lessonTypeId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int instructorId = rs.getInt("INSTRUCTORID");
+
+                LessonType lessonType = new LessonType();
+                lessonType.setId(lessonTypeId);
+
+                Instructor instructor = new Instructor();
+                instructor.setId(instructorId);
+
                 Lesson lesson = new Lesson(
                     rs.getInt("ID"),
                     rs.getInt("MINSTUDENT"),
@@ -171,4 +229,5 @@ public class LessonDAO {
 
         return lessons;
     }
+
 }
